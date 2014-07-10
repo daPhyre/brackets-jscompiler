@@ -30,7 +30,7 @@ define(function (require, exports, module) {
 			Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Current document is not JavaScript');
 		} else {
 			// Get current file path
-			var path = currentFile.fullPath.substr(0,currentFile.fullPath.lastIndexOf('.')) + '.min.js';
+			var path = currentFile.fullPath.replace(/\.js$/, '.min.js');
 			//log('Compiling ' + path);
 			
 			// Get current document text
@@ -49,9 +49,13 @@ define(function (require, exports, module) {
 			//log(code);
 			
 			// Save the code
-			var newFile = FileSystem.getFileForPath(path);
-			newFile.write(code);
-			Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', newFile.name + ' compiled!');
+			FileSystem.getFileForPath(path).write(code, {blind: true}, function(err){
+				if (err) {
+					Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Error on compilation:\n' + err);
+				} else {
+					Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'File successfully compiled at:\n' + path);
+				}
+			});
 		}
 	}
 

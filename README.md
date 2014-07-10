@@ -12,4 +12,4 @@ I'm aware that this is not the first compress tool for JavaScript in Brackets, b
 
 With this in mind, I decided to make my own version, that was simple, fast and reliable for this task, resulting on the extension that is now here.
 
-Special thanks to Steffen Bruchmann, who helped me a lot on my first steps with brackets extension development.
+Special thanks to Steffen Bruchmann and Peter Flynn, who helped me a lot on my first steps with brackets extension development.
