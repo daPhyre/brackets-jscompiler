@@ -6,16 +6,20 @@ define(function (require, exports, module) {
 	var DocumentManager = brackets.getModule('document/DocumentManager');
 	var FileSystem      = brackets.getModule('filesystem/FileSystem');
 	var ExtensionUtils  = brackets.getModule('utils/ExtensionUtils');
+	var WorkspaceManager	= brackets.getModule('view/WorkspaceManager');
 	var DefaultDialogs  = brackets.getModule('widgets/DefaultDialogs');
 	var Dialogs         = brackets.getModule('widgets/Dialogs');
+	var MOZ_SourceMap	= require('SourceMap/source-map');
 	var UglifyJS        = require('UglifyJS/uglifyjs');
-
-	var COMMAND_ID   = 'jscompiler.compile';
-	var COMMAND_NAME = 'Compress JavaScript';
 
 	// Log
 	function log(s) {
-		console.log('[JSCompiler] '+s);
+		console.log('[JSCompiler] ' + s);
+	}
+
+	function appendLog(s) {
+		panelLog.append('<br/>' + s);
+		panelLog.scrollTop(panelLog[0].scrollHeight);
 	}
 
 	// UglifyJS call
@@ -29,43 +33,75 @@ define(function (require, exports, module) {
 			// Current file is not JavaScript. Warn!
 			Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Current document is not JavaScript');
 		} else {
+			bottomPanel.show();
+			
 			// Get current file path
 			var path = currentFile.fullPath.replace(/\.js$/, '.min.js');
-			//log('Compiling ' + path);
+			var path_map = currentFile.fullPath.replace(/\.js$/, '.map');
+			appendLog('Compiling file:<br/>' + currentFile.fullPath);
 			
 			// Get current document text
 			var currentDocumentText = DocumentManager.getCurrentDocument().getText();
 			//log(currentDocumentText);
 
 			// Start UglifyJS magic!
-			var ast=UglifyJS.parse(currentDocumentText);
-			var compressor=UglifyJS.Compressor();
+			var ast = null;
+			var compressor = UglifyJS.Compressor();
+			var source_map = UglifyJS.SourceMap();
+			var stream = UglifyJS.OutputStream();
+			var stream = UglifyJS.OutputStream({source_map: source_map});
+			appendLog('Parsing...');
+			ast = UglifyJS.parse(currentDocumentText, {filename: currentFile.fullPath, toplevel: ast});
+			appendLog('Compressing...');
 			ast.figure_out_scope();
-			ast.transform(compressor)
+			ast.transform(compressor);
+			appendLog('Mangling...');
 			ast.figure_out_scope();
 			ast.compute_char_frequency();
 			ast.mangle_names();
-			var code = ast.print_to_string();
+			appendLog('Extracting...');
+			ast.print(stream);
+			var code = stream.toString();
+			var map = source_map.toString();
 			//log(code);
 			
+			appendLog('Exporting...');
 			// Save the code
-			FileSystem.getFileForPath(path).write(code, {blind: true}, function(err){
+			FileSystem.getFileForPath(path).write(code, {blind: true}, function (err) {
 				if (err) {
 					Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Error on compilation:\n' + err);
 				} else {
-					Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'File successfully compiled at:\n' + path);
+					appendLog('File successfully compiled at:<br/>' + path);
+				}
+			});
+			
+			// Save the map
+			FileSystem.getFileForPath(path_map).write(code, {blind: true}, function (err) {
+				if (err) {
+					Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Error on map genetarion:\n' + err);
+				} else {
+					appendLog('Map successfully generated at:\n' + path_map + '<br/>Done!<br/>');
 				}
 			});
 		}
 	}
 
-	// Register command
-	CommandManager.register(COMMAND_NAME, COMMAND_ID, doUglify);
+	function closePanel() {
+		bottomPanel.hide();
+	}
 
 	// Add file menu option
 	var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
 	menu.addMenuDivider();
-	menu.addMenuItem(COMMAND_ID);
+
+	// Register commands
+	CommandManager.register('Compress JavaScript', 'jscompiler.compile', doUglify);
+	menu.addMenuItem('jscompiler.compile');
+
+	// Start bottom panel
+	var bottomPanel = WorkspaceManager.createBottomPanel('jscompiler.panel', $("<div id='jscompiler-panel' class='bottom-panel vert-resizable top-resizer' style='box-sizing: border-box; height: 200px; display: block;'><div class='toolbar simple-toolbar-layout'><div class='title'>JSCompiler</div> <a href='#' class='close'>×</a></div><div id='log' class='table-container resizable-content' style='height: 170px'></div></div></div>"));
+	var panelLog = bottomPanel.$panel.find('#log');
+	bottomPanel.$panel.find('.close').on('click', closePanel);
 
 	// Load css
 	ExtensionUtils.loadStyleSheet(module, 'styles/main.css');
@@ -74,7 +110,7 @@ define(function (require, exports, module) {
 	$('<a>')
 		.attr({
 			id: 'toolbar-jscompiler',
-			title: COMMAND_NAME,
+			title: 'Compress JavaScript',
 			href: '#'
 		})
 		.click(doUglify)
