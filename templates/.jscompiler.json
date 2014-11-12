@@ -1,0 +1,6 @@
+{
+	"project": "%DIRECTORY%",
+	"inputs": ["%FILENAME%.js"],
+	"output": "%FILENAME%.min.js",
+	"isolate": false
+}
