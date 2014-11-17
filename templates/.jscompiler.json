@@ -2,5 +2,7 @@
 	"project": "%DIRECTORY%",
 	"inputs": ["%FILENAME%.js"],
 	"output": "%FILENAME%.min.js",
+	"generateMap": true,
+	"mangle": true,
 	"isolate": false
 }

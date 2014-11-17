@@ -10,8 +10,8 @@ define(function (require, exports, module) {
 	var WorkspaceManager = brackets.getModule('view/WorkspaceManager');
 	var DefaultDialogs   = brackets.getModule('widgets/DefaultDialogs');
 	var Dialogs          = brackets.getModule('widgets/Dialogs');
-	//var MOZ_SourceMap    = require('SourceMap/source-map');
 	var UglifyJS         = require('UglifyJS/uglifyjs');
+	window.MOZ_SourceMap = require('./SourceMap/source-map');
 
 	// Log
 	function log(s) {
@@ -34,38 +34,51 @@ define(function (require, exports, module) {
 		// Start UglifyJS magic!
 		var ast = null;
 		var compressor = UglifyJS.Compressor();
-		//var source_map = UglifyJS.SourceMap();
-		//var stream = UglifyJS.OutputStream({source_map: source_map});
-		var stream = UglifyJS.OutputStream();
-		for(var i = 0, l = inputs.length; i < l; i++){
+		var source_map = UglifyJS.SourceMap();
+		var stream = UglifyJS.OutputStream({source_map: source_map});
+		var i, l;
+		for (i = 0, l = inputs.length; i < l; i++) {
 			appendLog('Parsing file: ' + inputs[i].name);
 			ast = UglifyJS.parse(inputs[i].content, {filename: inputs[i].name, toplevel: ast});
 		}
 		appendLog('Compressing...');
 		ast.figure_out_scope();
 		ast.transform(compressor);
-		appendLog('Mangling...');
-		ast.figure_out_scope();
-		ast.compute_char_frequency();
-		ast.mangle_names();
+		if (!options || options.mangle) {
+			appendLog('Mangling...');
+			ast.figure_out_scope();
+			ast.compute_char_frequency();
+			ast.mangle_names();
+		}
 		appendLog('Extracting...');
 		ast.print(stream);
 		var code = stream.toString();
-		//var map = source_map.toString();
 		
 		// Append isolation code
-		if (options.isolate) {
+		if (options && options.isolate) {
 			appendLog('Isolating...');
 			if (options.project) {
 				code = 'var ' + options.project + '=(function(window,undefined){' + code;
-			}
-			else{
+			} else {
 				code = '(function(window,undefined){' + code;
 			}
 			code += '})(window);';
 		}
 		
 		appendLog('Exporting...');
+		// Save the map
+		if (!options || options.generateMap) {
+			var map = source_map.toString();
+			FileSystem.getFileForPath(path + '.map').write(map, {blind: true}, function (err) {
+				if (err) {
+					appendLog('Error generating map at:<br/>' + path + '.map');
+					Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Error on map genetarion:\n' + err);
+				} else {
+					appendLog('Map successfully generated at:<br/>\n' + path + '.map');
+				}
+			});
+		}
+		
 		// Save the code
 		FileSystem.getFileForPath(path).write(code, {blind: true}, function (err) {
 			if (err) {
@@ -75,16 +88,6 @@ define(function (require, exports, module) {
 				appendLog('File successfully compiled at:<br/>' + path + '<br/>Done!<br/>');
 			}
 		});
-		
-		// Save the map
-		/*FileSystem.getFileForPath(path + '.map').write(code, {blind: true}, function (err) {
-			if (err) {
-				appendLog('Error generating map at:<br/>' + path + '.map');
-				Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Error on map genetarion:\n' + err);
-			} else {
-				appendLog('Map successfully generated at:\n' + path + '.map');
-			}
-		});*/
 	}
 	
 	function getContentsFrom(options, directory, contents, counter) {
@@ -106,14 +109,13 @@ define(function (require, exports, module) {
 			if (contents.length > 0) {
 				// Finally compile the code
 				doUglify(contents, options.output, options);
-			}
-			else{
+			} else {
 				appendLog('Something went wrong.<br/>Done!');
 			}
 		}
 	}
 	
-	function compileJS(){
+	function compileJS() {
 		log('Executing Command Compile');
 		
 		// Search for options file
@@ -121,12 +123,12 @@ define(function (require, exports, module) {
 		var directory = currentFile.parentPath;
 		FileSystem.getFileForPath(directory + '.jscompiler.json').read({}, function (err, content) {
 			if (err) {
-				if (err == 'NotFound') {
+				if (err === 'NotFound') {
 					// Options file not found. Try to compile current file
 					bottomPanel.show();
 					appendLog('No options file. Compiling current script');
 					var ext = currentFile.name.split('.').pop();
-					if (ext == 'js') {
+					if (ext === 'js') {
 						doUglify([{name: currentFile.name, content: DocumentManager.getCurrentDocument().getText()}], currentFile.name.replace(/\.js$/, '.min.js'));
 					} else {
 						// Current file is not JavaScript. Warn!
@@ -147,7 +149,7 @@ define(function (require, exports, module) {
 	
 	function generateOptions() {
 		// Read the template
-		ExtensionUtils.loadFile(module, 'templates/.jscompiler.json').then( function(result) {
+		ExtensionUtils.loadFile(module, 'templates/.jscompiler.json').then(function (result) {
 			// Get directory and file name for project options
 			var file = DocumentManager.getCurrentDocument().file;
 			var directory = file.parentPath;
@@ -155,7 +157,7 @@ define(function (require, exports, module) {
 			directories.pop();
 			var dirname = directories.pop();
 			var filename = file.name.replace(/\.js$/, '');
-			if (filename == file.name) {
+			if (filename === file.name) {
 				filename = 'script';
 			}
 			var code = result.replace(/%DIRECTORY%/g, dirname).replace(/%FILENAME%/g, filename);
@@ -178,7 +180,7 @@ define(function (require, exports, module) {
 		// Reading the options file content
 		FileSystem.getFileForPath(path).read({}, function (err, content) {
 			if (err) {
-				if (err == 'NotFound') {
+				if (err === 'NotFound') {
 					// Options file not found. Generate
 					log('Options file not found. Creating!');
 					generateOptions();

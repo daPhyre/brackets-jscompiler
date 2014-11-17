@@ -2,6 +2,13 @@
 
 JSCompiler2 is a tool for [Brackets](https://github.com/adobe/brackets) that allows you to compress and mangle your JavaScript code into one minified file, powered by [UglifyJS2](https://github.com/mishoo/UglifyJS2)
 
+## Features
+
+- Doesn't require previous configurations to be used.
+- Compile multiple javascripts into one.
+- Customize compilation options.
+- Works even offline.
+
 ## Usage
 
 Simply press the "Compress JavaScript" button on the sidebar, or go to `File > Compress JavaScript`, and your code will be compressed into a `{filename}.min.js` file.
@@ -13,6 +20,8 @@ You can go to `File > Compress JavaScript: Options` to open a JSON file with the
 - **Project**: The name of the current project.
 - **Inputs**: An array of javascript files to be compressed into the minified file.
 - **Output**: The name of the resulting minified file.
+- **GenerateMap**: A boolean value. If this is false, the source map for the code won't be generated.
+- **Mangle**: A boolean value. If this is false, the code won't be mangled.
 - **Isolate**: A boolean value. If this is true, the resulting code will be isolated so it wont affect or be affected by other scripts.
 
 If the isolate option is true, the resulting code will be wrapped with the next code, assigned to a variable named as the project, so external scripts can access properly to it's content:
