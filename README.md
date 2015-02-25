@@ -4,9 +4,10 @@ JSCompiler2 is a tool for [Brackets](https://github.com/adobe/brackets) that all
 
 ## Features
 
-- Doesn't require previous configurations to be used.
-- Compile multiple javascripts into one.
-- Customize compilation options.
+- Doesn't require previous configurations for quick first use.
+- Customize advanced compilation options.
+- Compile multiple javascripts into one output.
+- Generate multiple outputs at once.
 - Works even offline.
 
 ## Usage
@@ -17,22 +18,13 @@ Simply press the "Compress JavaScript" button on the sidebar, or go to `File > C
 
 You can go to `File > Compress JavaScript: Options` to open a JSON file with the compiler options for the currect directory. There you can customize next values:
 
-- **Project**: The name of the current project.
 - **Inputs**: An array of javascript files to be compressed into the minified file.
 - **Output**: The name of the resulting minified file.
 - **GenerateMap**: A boolean value. If this is false, the source map for the code won't be generated.
 - **Mangle**: A boolean value. If this is false, the code won't be mangled.
-- **Isolate**: A boolean value. If this is true, the resulting code will be isolated so it wont affect or be affected by other scripts.
+- **Isolate**: A boolean value. If this is true, the resulting code will be isolated so it won't affect or be affected by other scripts.
 
-If the isolate option is true, the resulting code will be wrapped with the next code, assigned to a variable named as the project, so external scripts can access properly to it's content:
-
-```javascript
-var ProjectName = (function(window, undefined){
-   // Your compiled code
-})(window);
-```
-
-If you don't want your code be accesible to other scripts, just leave the project name with an empty string, resulting the wrapper as shown next:
+If the isolate option is true, the resulting code will be wrapped with the next code:
 
 ```javascript
 (function(window, undefined){
@@ -40,8 +32,12 @@ If you don't want your code be accesible to other scripts, just leave the projec
 })(window);
 ```
 
-You can also customize the default template for new projects at `File > Compress JavaScript: Options template`. Careful! This is only for advanced users. Updates will restore the template to prevent unexpected crashes.
+You can create multiple outputs by adding more JSON objects to the main **outputs** array.
+
+Also, you can customize the default template for new projects at `File > Compress JavaScript: Options template`. Careful! This is only for advanced users. Updates will restore the template to prevent unexpected crashes.
 
 ## Special thanks
 
 Special thanks to Steffen Bruchmann and Peter Flynn, who helped me a lot on my first steps with brackets extension development.
+
+Special thanks also to mrmckeb, kevinmerckx and bbak for their support and ideas through GitHub.

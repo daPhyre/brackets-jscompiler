@@ -12,15 +12,24 @@ define(function (require, exports, module) {
 	var Dialogs          = brackets.getModule('widgets/Dialogs');
 	var UglifyJS         = require('UglifyJS/uglifyjs');
 	window.MOZ_SourceMap = require('./SourceMap/source-map');
+	
+	var pendingTasks = 0;
 
 	// Log
 	function log(s) {
-		console.log('[JSCompiler] ' + s);
+		window.console.log('[JSCompiler] ' + s);
 	}
 
 	function appendLog(s) {
 		panelLog.append('<br/>' + s);
 		panelLog.scrollTop(panelLog[0].scrollHeight);
+	}
+	
+	function taskDone() {
+		pendingTasks -= 1;
+		if (pendingTasks < 1) {
+			appendLog('Done!<br/>');
+		}
 	}
 
 	// UglifyJS call
@@ -37,7 +46,7 @@ define(function (require, exports, module) {
 		var source_map = UglifyJS.SourceMap();
 		var stream = UglifyJS.OutputStream({source_map: source_map});
 		var i, l;
-		for (i = 0, l = inputs.length; i < l; i++) {
+		for (i = 0, l = inputs.length; i < l; i += 1) {
 			appendLog('Parsing file: ' + inputs[i].name);
 			ast = UglifyJS.parse(inputs[i].content, {filename: inputs[i].name, toplevel: ast});
 		}
@@ -57,18 +66,15 @@ define(function (require, exports, module) {
 		// Append isolation code
 		if (options && options.isolate) {
 			appendLog('Isolating...');
-			if (options.project) {
-				code = 'var ' + options.project + '=(function(window,undefined){' + code;
-			} else {
-				code = '(function(window,undefined){' + code;
-			}
-			code += '})(window);';
+			code = '(function(window,undefined){' + code + '})(window);';
 		}
 		
 		appendLog('Exporting...');
 		// Save the map
 		if (!options || options.generateMap) {
+			code += '\n//# sourceMappingURL=' + output + '.map';
 			var map = source_map.toString();
+			pendingTasks += 1;
 			FileSystem.getFileForPath(path + '.map').write(map, {blind: true}, function (err) {
 				if (err) {
 					appendLog('Error generating map at:<br/>' + path + '.map');
@@ -76,17 +82,20 @@ define(function (require, exports, module) {
 				} else {
 					appendLog('Map successfully generated at:<br/>\n' + path + '.map');
 				}
+				taskDone();
 			});
 		}
 		
 		// Save the code
+		pendingTasks += 1;
 		FileSystem.getFileForPath(path).write(code, {blind: true}, function (err) {
 			if (err) {
 				appendLog('Error compiling code at:<br/>' + path);
 				Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, 'JS Compiler', 'Error on compilation:\n' + err);
 			} else {
-				appendLog('File successfully compiled at:<br/>' + path + '<br/>Done!<br/>');
+				appendLog('File successfully compiled at:<br/>' + path);
 			}
+			taskDone();
 		});
 	}
 	
@@ -117,6 +126,7 @@ define(function (require, exports, module) {
 	
 	function compileJS() {
 		log('Executing Command Compile');
+		pendingTasks = 0;
 		
 		// Search for options file
 		var currentFile = DocumentManager.getCurrentDocument().file;
@@ -140,9 +150,22 @@ define(function (require, exports, module) {
 			} else {
 				// Open options template
 				bottomPanel.show();
-				appendLog('Loading files from options');
+				appendLog('Loading options');
 				var options = JSON.parse(content);
-				getContentsFrom(options, directory, [], 0);
+				if (options.outputs) {
+					// Compile each output in options
+					var i, l;
+					l = options.outputs.length;
+					appendLog('Found ' + l + ' outputs');
+					for (i = 0; i < l; i += 1) {
+						appendLog('Generating ' + options.outputs[i].output);
+						getContentsFrom(options.outputs[i], directory, [], 0);
+					}
+				} else {
+					// Compile with old single output option format
+					appendLog('Generating ' + options.output);
+					getContentsFrom(options, directory, [], 0);
+				}
 			}
 		});
 	}
