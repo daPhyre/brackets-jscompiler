@@ -1,5 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1">
-  <circle cx="12" cy="12" r="9" style="fill:#bbb" />
-  <path d="m 9,7 0,10 8,-5 z" style="fill:#5d5f60" />
+<?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="-293 385 24 24" style="enable-background:new -293 385 24 24;" xml:space="preserve">
+<path style="fill:#BBBBBB;" d="M-282.458,398.663c0.358,0.585,0.825,1.015,1.649,1.015c0.693,0,1.135-0.346,1.135-0.824
+	c0-0.573-0.455-0.776-1.217-1.11l-0.418-0.179c-1.206-0.514-2.008-1.158-2.008-2.519c0-1.254,0.955-2.208,2.448-2.208
+	c1.063,0,1.827,0.37,2.378,1.338l-1.302,0.836c-0.287-0.514-0.596-0.716-1.076-0.716c-0.49,0-0.8,0.311-0.8,0.716
+	c0,0.501,0.311,0.705,1.028,1.015l0.418,0.179c1.42,0.609,2.222,1.23,2.222,2.626c0,1.505-1.182,2.329-2.77,2.329
+	c-1.552,0-2.555-0.74-3.046-1.709L-282.458,398.663z M-288.363,398.808c0.263,0.466,0.501,0.86,1.076,0.86
+	c0.549,0,0.896-0.215,0.896-1.05v-5.684h1.672v5.707c0,1.731-1.015,2.519-2.496,2.519c-1.338,0-2.113-0.693-2.508-1.527
+	L-288.363,398.808z"/>
+<polyline style="fill:none;stroke:#BBBBBB;stroke-width:2;stroke-linecap:square;stroke-miterlimit:10;" points="-277,390 
+	-273,397.167 -277,404 "/>
+<path style="fill:none;stroke:#BBBBBB;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10;" d="M-286,390"/>
 </svg>
