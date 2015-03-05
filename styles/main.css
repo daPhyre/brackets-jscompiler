@@ -1,18 +1,19 @@
 #toolbar-jscompiler {
-	background-image: url(images/run.svg);
-    background-size: 24px;
+	background-image: url(images/jscompiler.svg);
+	height: 24px;
+	width: 24px;
 }
 #toolbar-jscompiler.success {
-    background-position: 0 -23px !important;
+	background-position: 0 -24px;
 }
 #toolbar-jscompiler.active {
-    background-position: 0 -46px !important;
+	background-position: 0 -48px;
 }
 #toolbar-jscompiler.warning {
-    background-position: 0 -69px !important;
+	background-position: 0 -72px;
 }
 #toolbar-jscompiler.error {
-    background-position: 0 -92px !important;
+	background-position: 0 -96px;
 }
 #toolbar-jscompiler.disabled {
    opacity: 0.4;

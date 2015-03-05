@@ -40,4 +40,6 @@ Also, you can customize the default template for new projects at `File > Compres
 
 Special thanks to Steffen Bruchmann and Peter Flynn, who helped me a lot on my first steps with brackets extension development.
 
-Special thanks also to mrmckeb, kevinmerckx and bbak for their support and ideas through GitHub.
+Special thanks also to miladd3, elegos, mrmckeb, kevinmerckx and bbak for their support and ideas through GitHub.
+
+And special thanks too to mrmckeb for the new compiler icon.

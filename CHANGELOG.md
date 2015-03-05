@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.9.5] - 2015-03-05
+### Added
+- New icon, proposed by mrmckeb, more intuitive and unique, with different states.
+
+## Fixed
+- Source map comment link was pointing to the wrong place if the generated result is not on the same folder.
+
 ## [1.9.4] - 2015-02-24
 ### Added
 - Multiple outputs can be generated at once.

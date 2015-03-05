@@ -29,6 +29,7 @@ define(function (require, exports, module) {
 		pendingTasks -= 1;
 		if (pendingTasks < 1) {
 			appendLog('Done!<br/>');
+			toolbarIcon.removeAttribute('class');
 		}
 	}
 
@@ -72,7 +73,7 @@ define(function (require, exports, module) {
 		appendLog('Exporting...');
 		// Save the map
 		if (!options || options.generateMap) {
-			code += '\n//# sourceMappingURL=' + output + '.map';
+			code += '\n//# sourceMappingURL=' + output.split('/').pop() + '.map';
 			var map = source_map.toString();
 			pendingTasks += 1;
 			FileSystem.getFileForPath(path + '.map').write(map, {blind: true}, function (err) {
@@ -127,6 +128,7 @@ define(function (require, exports, module) {
 	function compileJS() {
 		log('Executing Command Compile');
 		pendingTasks = 0;
+		toolbarIcon.setAttribute('class', 'active');
 		
 		// Search for options file
 		var currentFile = DocumentManager.getCurrentDocument().file;
@@ -258,12 +260,12 @@ define(function (require, exports, module) {
 	ExtensionUtils.loadStyleSheet(module, 'styles/main.css');
 	
 	// Add toolbar icon
-	$('<a>')
+	var toolbarIcon = $('<a>')
 		.attr({
 			id: 'toolbar-jscompiler',
 			title: 'Compress JavaScript',
 			href: '#'
 		})
 		.click(compileJS)
-		.appendTo($('#main-toolbar .buttons'));
+		.appendTo($('#main-toolbar .buttons'))[0];
 });
