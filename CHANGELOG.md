@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.9.9] - 2015-03-08
+### Added
+- Support native brackets preferences, which are now the default (See README for more details).
+- Full code cleanup and optimization.
+
+## [1.9.6][unreleased]
+### Added
+- Optional precompile, for special javascript cases.
+
 ## [1.9.5] - 2015-03-05
 ### Added
 - New icon, proposed by mrmckeb, more intuitive and unique, with different states.
