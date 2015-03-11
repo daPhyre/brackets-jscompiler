@@ -14,7 +14,7 @@ JSCompiler2 is a tool for [Brackets](https://github.com/adobe/brackets) that all
 
 Simply press the "Compress JavaScript" button on the sidebar, or go to `File > Compress JavaScript`, and your code will be compressed into a `{filename}.min.js` file.
 
-## The custom options file
+### The custom options file
 
 You can go to `File > Compress JavaScript: Options` to open your custom options. If you have no custom options yet, you will be asked to choose one of this types of custom options:
 
@@ -24,7 +24,7 @@ You can go to `File > Compress JavaScript: Options` to open your custom options.
 
 When the compilation starts, JSCompiler will give priority to any `.jscompiler.json` in the current folder, as this option will allow you to have custom sub-projects inside your main project. Then, it will search for any global options in the current project inside `.brackets.json`. If no option is found anywhere, it will attempt to compile then the current file, if it is a Javascript file.
 
-## Custom options
+### Custom options
 
 In your options file, you can customize next values:
 

@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2015-03-09
+### Fixed
+- Fixed last critical bugs (I hope). Official v2.0.0 release.
+
 ## [1.9.9] - 2015-03-08
 ### Added
 - Support native brackets preferences, which are now the default (See README for more details).

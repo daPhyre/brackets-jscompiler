@@ -45,12 +45,14 @@ define(function (require, exports, module) {
 	}
 
 	// UglifyJS call
-	function doUglify(inputs, output, options) {
+	function doUglify(inputs, output, options, directory) {
 		bottomPanel.show();
 		
 		// Get current directory
-		var directory = DocumentManager.getCurrentDocument().file.parentPath,
-			path = directory + output,
+		if (directory === undefined) {
+			directory = DocumentManager.getCurrentDocument().file.parentPath;
+		}
+		var path = directory + output,
 		
 		// Start UglifyJS magic!
 			ast = null,
@@ -141,9 +143,9 @@ define(function (require, exports, module) {
 					for (i = 0, l = contents.length; i < l; i += 1) {
 						content += contents[i].content + '\n';
 					}
-					doUglify([{name: 'precompiled.js', content: content}], options.output, options);
+					doUglify([{name: 'precompiled.js', content: content}], options.output, options, directory);
 				} else {
-					doUglify(contents, options.output, options);
+					doUglify(contents, options.output, options, directory);
 				}
 			} else {
 				appendLog('Something went wrong.<br/>Done!');
@@ -151,9 +153,8 @@ define(function (require, exports, module) {
 		}
 	}
 	
-	function compileWithOptions(content, directory) {
-		var options = JSON.parse(content),
-			i = 0,
+	function compileWithOptions(options, directory) {
+		var i = 0,
 			l = 0;
 		if (options.outputs) {
 			// Compile each output in options
@@ -178,6 +179,7 @@ define(function (require, exports, module) {
 		// Search for options file
 		var currentFile = DocumentManager.getCurrentDocument().file,
 			directory = currentFile.parentPath,
+			options,
 			preferences = null;
 		FileSystem.getFileForPath(directory + '.jscompiler.json').read({}, function (err, content) {
 			if (err) {
@@ -188,13 +190,13 @@ define(function (require, exports, module) {
 					if (preferences !== undefined) {
 						// Read project options file
 						appendLog('Loading project options');
-						compileWithOptions(preferences, directory);
+						compileWithOptions(preferences, ProjectManager.getProjectRoot().fullPath);
 					} else {
 						// Options not found. Try to compile current file
 						appendLog('No options file. Compiling current script');
 						var ext = currentFile.name.split('.').pop();
 						if (ext === 'js') {
-							doUglify([{name: currentFile.name, content: DocumentManager.getCurrentDocument().getText()}], currentFile.name.replace(/\.js$/, '.min.js'));
+							doUglify([{name: currentFile.name, content: DocumentManager.getCurrentDocument().getText()}], currentFile.name.replace(/\.js$/, '.min.js'), directory);
 						} else {
 							// Current file is not JavaScript. Warn!
 							appendLog('Current document is not JavaScript');
@@ -208,7 +210,8 @@ define(function (require, exports, module) {
 				// Read portable options file
 				bottomPanel.show();
 				appendLog('Loading portable options');
-				compileWithOptions(content, directory);
+				options = JSON.parse(content);
+				compileWithOptions(options, directory);
 			}
 		});
 	}
