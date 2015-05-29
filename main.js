@@ -196,7 +196,7 @@ define(function (require, exports, module) {
 						appendLog('No options file. Compiling current script');
 						var ext = currentFile.name.split('.').pop();
 						if (ext === 'js') {
-							doUglify([{name: currentFile.name, content: DocumentManager.getCurrentDocument().getText()}], currentFile.name.replace(/\.js$/, '.min.js'), directory);
+							doUglify([{name: currentFile.name, content: DocumentManager.getCurrentDocument().getText()}], currentFile.name.replace(/\.js$/, '.min.js'), undefined, directory);
 						} else {
 							// Current file is not JavaScript. Warn!
 							appendLog('Current document is not JavaScript');
