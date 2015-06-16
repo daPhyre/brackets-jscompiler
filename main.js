@@ -14,7 +14,6 @@ define(function (require, exports, module) {
     DefaultDialogs     = brackets.getModule('widgets/DefaultDialogs'),
     Dialogs            = brackets.getModule('widgets/Dialogs'),
     UglifyJS           = require('UglifyJS/uglifyjs'),
-    //EditorManager      = brackets.getModule('editor/EditorManager'),
 
     menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU),
     bottomPanel = null,
@@ -351,8 +350,7 @@ define(function (require, exports, module) {
 
   // Register for documentSaved events to support inline-editors
   $(DocumentManager).on('documentSaved', function (event, document) {
-    if (/*EditorManager.getCurrentFullEditor().document !== document && */document.getLanguage().getId() === 'javascript') {
-      //compileLess(document.getText(), document.file.fullPath);
+    if (document.getLanguage().getId() === 'javascript') {
       compileJS();
     }
   });
