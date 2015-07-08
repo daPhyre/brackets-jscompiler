@@ -412,7 +412,7 @@ define(function (require, exports, module) {
         compileJS();
     });
 
-    // Compile on save only if local .jscompiler.json file exists
+    // Compile on save
     $(DocumentManager).on("documentSaved", function (event, doc) {
         if (prefs.get("on-save")) {
             compileJS();
