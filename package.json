@@ -1,12 +1,16 @@
 {
-	"name": "ktayfer.jscompiler",
-	"title": "JSCompiler2",
-	"description": "Compress your JavaScript code from multiple files into one minified file (Powered by UglifyJS2).",
-	"homepage": "https://github.com/daPhyre/brackets-jscompiler",
-	"version": "2.0.1",
-	"author": "Karl Tayfer",
-	"license": "MIT",
-	"engines": {
-		"brackets": ">=1.0.0"
-	}
+    "name": "ktayfer.jscompiler",
+    "title": "JSCompiler2",
+    "description": "Compress your JavaScript code from multiple files into one minified file (Powered by UglifyJS2).",
+    "homepage": "https://github.com/daPhyre/brackets-jscompiler",
+    "version": "2.5.0",
+    "author": "Karl Tayfer",
+    "contributors": [
+        "Karl Tayfer (https://github.com/daPhyre)",
+        "Henry LaVoo (https://github.com/henrylavoo)"
+    ],
+    "license": "MIT",
+    "engines": {
+        "brackets": ">=1.0.0"
+    }
 }

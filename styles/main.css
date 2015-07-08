@@ -1,20 +1,57 @@
 #toolbar-jscompiler {
-	background-image: url(images/jscompiler.svg);
-	height: 24px;
-	width: 24px;
+    background-image: url(images/jscompiler.svg);
+    height: 24px;
+    width: 24px;
 }
 #toolbar-jscompiler.success {
-	background-position: 0 -24px;
+    background-position: 0 -24px;
 }
 #toolbar-jscompiler.active {
-	background-position: 0 -48px;
+    background-position: 0 -48px;
 }
 #toolbar-jscompiler.warning {
-	background-position: 0 -72px;
+    background-position: 0 -72px;
 }
 #toolbar-jscompiler.error {
-	background-position: 0 -96px;
+    background-position: 0 -96px;
 }
 #toolbar-jscompiler.disabled {
    opacity: 0.4;
+}
+#status-jscompiler {
+    background-color: transparent;
+    background-image: url(images/jscompiler.svg);
+    background-repeat: no-repeat;
+    cursor: pointer;
+    width: 5px;
+}
+
+#status-jscompiler.success {
+    background-position: 0 -24px;
+}
+#status-jscompiler.active {
+    background-position: 0 -48px;
+}
+#status-jscompiler.warning {
+    background-position: 0 -72px;
+}
+#status-jscompiler.error {
+    background-position: 0 -96px;
+}
+#status-jscompiler.disabled {
+    opacity: 0.4;
+}
+#jscompiler-panel .compile {
+    margin-left: 10px;
+    padding: 0 5px;
+    border-radius: 3px;
+    background-color: #3C3F41;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #ddd;
+    cursor: pointer;
+}
+#jscompiler-panel .compile:hover {
+    background-color: #47484B;
+    color: #fff;
 }

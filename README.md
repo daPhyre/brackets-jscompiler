@@ -14,6 +14,8 @@ JSCompiler2 is a tool for [Brackets](https://github.com/adobe/brackets) that all
 
 Simply press the "Compress JavaScript" button on the sidebar, or go to `File > Compress JavaScript`, and your code will be compressed into a `{filename}.min.js` file.
 
+Optionally, you can toggle "Compress JavaScript on Save" by going to `File > Compress JavaScript on Save`, and your code will be compressed automatically. This options is off by default.
+
 ### The custom options file
 
 You can go to `File > Compress JavaScript: Options` to open your custom options. If you have no custom options yet, you will be asked to choose one of this types of custom options:
