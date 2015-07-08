@@ -58,7 +58,6 @@ define(function (require, exports, module) {
 
     // UglifyJS call
     function doUglify(inputs, output, options, directory) {
-        //bottomPanel.show();
 
         // Get current directory
         if (directory === undefined) {
@@ -201,7 +200,6 @@ define(function (require, exports, module) {
             if (err) {
                 if (err === 'NotFound') {
                     // Options file not found. Using project options?
-                    bottomPanel.show();
                     preferences = PreferencesManager.get('jscompiler');
                     if (preferences !== undefined) {
                         // Read project options file
@@ -225,7 +223,6 @@ define(function (require, exports, module) {
                 }
             } else {
                 // Read portable options file
-                //bottomPanel.show();
                 appendLog('Loading portable options');
                 options = JSON.parse(content);
                 compileWithOptions(options, directory);
@@ -387,7 +384,10 @@ define(function (require, exports, module) {
             title: 'Compress JavaScript',
             href: '#'
         })
-        .click(compileJS)
+        .click(function() {
+            bottomPanel.show();
+            compileJS();
+    })
         .appendTo($('#main-toolbar .buttons'))[0];
 
     // Add status icon
