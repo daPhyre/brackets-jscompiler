@@ -51,8 +51,10 @@ Also, you can customize the default template for new projects at `File > Compres
 
 ## Special thanks
 
-Special thanks to Steffen Bruchmann and Peter Flynn, who helped me a lot on my first steps with brackets extension development.
+To Steffen Bruchmann and Peter Flynn, who helped me a lot on my first steps with brackets extension development.
 
-Special thanks also to miladd3, elegos, mrmckeb, kevinmerckx and bbak for their support and ideas through GitHub.
+Also to miladd3, elegos, mrmckeb, kevinmerckx and bbak for their support and ideas through GitHub.
 
-And special thanks too to mrmckeb for the new compiler icon.
+To mrmckeb for the new compiler icon.
+
+And to randdusing and henrylavoo for the auto-compile on save feature.

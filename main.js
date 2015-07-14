@@ -50,8 +50,13 @@ define(function (require, exports, module) {
                 statusIcon.setAttribute('class', 'success');
             }
             window.setTimeout(function () {
-                toolbarIcon.removeAttribute('class');
-                statusIcon.removeAttribute('class');
+                if (prefs.get("on-save")) {
+                    toolbarIcon.setAttribute('class', 'active');
+                    statusIcon.setAttribute('class', 'active');
+                } else {
+                    toolbarIcon.removeAttribute('class');
+                    statusIcon.removeAttribute('class');
+                }
             }, 3000);
         }
     }
@@ -331,14 +336,22 @@ define(function (require, exports, module) {
         bottomPanel.hide();
     }
 
-    function showHideIcons() {
+    function showHideAutoCompile() {
         if (prefs.get("on-save")) {
-            $('#status-jscompiler').show();
-            $('#toolbar-jscompiler').hide();
+            toolbarIcon.setAttribute('class', 'active');
+            statusIcon.setAttribute('class', 'active');
+            bottomPanel.$panel.find('.compile.auto').css('background-color', '#78b2f2');
         } else {
-            $('#status-jscompiler').hide();
-            $('#toolbar-jscompiler').show();
+            statusIcon.removeAttribute('class');
+            toolbarIcon.removeAttribute('class');
+            bottomPanel.$panel.find('.compile.auto').css('background-color', '');
         }
+    }
+    
+    function toggleAutoCompile() {
+        automaton.setChecked(!automaton.getChecked());
+        prefs.set("on-save", automaton.getChecked());
+        showHideAutoCompile();
     }
 
     // Add file menu option
@@ -348,17 +361,8 @@ define(function (require, exports, module) {
     CommandManager.register('Compress JavaScript', 'jscompiler.compile', compileJS);
     menu.addMenuItem('jscompiler.compile');
 
-    //compile on save option
-    CommandManager.register('Compress JavaScript on Save', compileAutoId, function () {
-        this.setChecked(!this.getChecked());
-    });
+    CommandManager.register('Compress JavaScript on Save', compileAutoId, toggleAutoCompile);
     automaton = CommandManager.get(compileAutoId);
-    $(automaton).on('checkedStateChange', function () {
-        prefs.set("on-save", automaton.getChecked());
-        showHideIcons();
-    });
-
-
     menu.addMenuItem(automaton);
 
     CommandManager.register('Compress JavaScript: Options', 'jscompiler.options', openOptions);
@@ -370,9 +374,11 @@ define(function (require, exports, module) {
     automaton.setChecked(prefs.get("on-save"));
 
     // Start bottom panel
-    bottomPanel = WorkspaceManager.createBottomPanel('jscompiler.panel', $('<div id="jscompiler-panel" class="bottom-panel vert-resizable top-resizer" style="box-sizing: border-box; height: 200px; display: block;"><div class="toolbar simple-toolbar-layout"><div class="title">JSCompiler</div><div class="compile">Compile</div> <a href="#" class="close">×</a></div><div id="log" class="table-container resizable-content" style="height: 170px"></div></div></div>'));
+    bottomPanel = WorkspaceManager.createBottomPanel('jscompiler.panel', $('<div id="jscompiler-panel" class="bottom-panel vert-resizable top-resizer" style="box-sizing: border-box; height: 200px; display: block;"><div class="toolbar simple-toolbar-layout"><div class="title">JSCompiler</div> <button class="compile auto">Auto-compile</button> <button class="compile now">Compile now</button> <a href="#" class="close">×</a></div><div id="log" class="table-container resizable-content" style="height: 170px"></div></div></div>'));
     panelLog = bottomPanel.$panel.find('#log');
     bottomPanel.$panel.find('.close').on('click', closePanel);
+    bottomPanel.$panel.find('.compile.auto').click(toggleAutoCompile);
+    bottomPanel.$panel.find('.compile.now').click(compileJS);
 
     // Load css
     ExtensionUtils.loadStyleSheet(module, 'styles/main.css');
@@ -384,10 +390,10 @@ define(function (require, exports, module) {
             title: 'Compress JavaScript',
             href: '#'
         })
-        .click(function() {
+        .click(function () {
             bottomPanel.show();
             compileJS();
-    })
+        })
         .appendTo($('#main-toolbar .buttons'))[0];
 
     // Add status icon
@@ -406,16 +412,15 @@ define(function (require, exports, module) {
         })
         .insertAfter($('#status-indicators #status-indent'))[0];
 
-    showHideIcons();
-
-    $('#jscompiler-panel .compile').click(function () {
-        compileJS();
-    });
-
     // Compile on save
     $(DocumentManager).on("documentSaved", function (event, doc) {
         if (prefs.get("on-save")) {
-            compileJS();
+            var ext = DocumentManager.getCurrentDocument().file.name.split('.').pop();
+            if (ext === 'js') {
+                compileJS();
+            }
         }
     });
+
+    showHideAutoCompile();
 });

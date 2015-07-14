@@ -18,6 +18,7 @@
 #toolbar-jscompiler.disabled {
    opacity: 0.4;
 }
+
 #status-jscompiler {
     background-color: transparent;
     background-image: url(images/jscompiler.svg);
@@ -25,7 +26,6 @@
     cursor: pointer;
     width: 5px;
 }
-
 #status-jscompiler.success {
     background-position: 0 -24px;
 }
@@ -41,9 +41,11 @@
 #status-jscompiler.disabled {
     opacity: 0.4;
 }
+
 #jscompiler-panel .compile {
     margin-left: 10px;
     padding: 0 5px;
+    border: none;
     border-radius: 3px;
     background-color: #3C3F41;
     text-transform: uppercase;
