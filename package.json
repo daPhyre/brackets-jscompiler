@@ -3,7 +3,7 @@
     "title": "JSCompiler2",
     "description": "Compress your JavaScript code from multiple files into one minified file (Powered by UglifyJS2).",
     "homepage": "https://github.com/daPhyre/brackets-jscompiler",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "author": "Karl Tayfer",
     "contributors": [
         "Karl Tayfer (https://github.com/daPhyre)",

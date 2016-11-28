@@ -85,7 +85,7 @@ define(function (require, exports, module) {
         appendLog('Compressing...');
         ast.figure_out_scope();
         ast.transform(compressor);
-        if (!options || options.mangle) {
+        if (!options || options.mangle !== false) {
             appendLog('Mangling...');
             ast.figure_out_scope();
             ast.compute_char_frequency();
@@ -103,7 +103,7 @@ define(function (require, exports, module) {
 
         appendLog('Exporting...');
         // Save the map
-        if (!options || options.generateMap) {
+        if (!options || options.generateMap !== false) {
             code += '\n//# sourceMappingURL=' + output.split('/').pop() + '.map';
             pendingTasks += 1;
             FileSystem.getFileForPath(path + '.map').write(source_map.toString(), {blind: true}, function (err) {
@@ -135,13 +135,17 @@ define(function (require, exports, module) {
     }
 
     function getContentsFrom(options, directory, contents, counter) {
+        var output = options.output || options.inputs[0].replace(/\.js$/, '.min.js'),
+            content = '',
+            i = 0,
+            l = 0;
         if (counter < options.inputs.length) {
             // There is content pending to get. Read it!
             appendLog('Reading ' + options.inputs[counter] + '...');
 
             FileSystem.getFileForPath(directory + options.inputs[counter]).read({}, function (err, content) {
                 if (err) {
-                    appendLog('Error on reading ' + options.inputs[counter] + ': ' + err + '<br/>' + options.output + ' compilation cancelled.<br/>');
+                    appendLog('Error on reading ' + options.inputs[counter] + ': ' + err + '<br/>' + output + ' compilation cancelled.<br/>');
                     toolbarIcon.setAttribute('class', 'warning');
                     statusIcon.setAttribute('class', 'warning');
                 } else {
@@ -156,15 +160,12 @@ define(function (require, exports, module) {
                 // Finally compile the code
                 if (options.precompile) {
                     appendLog('Precompiling code into: precompiled.js');
-                    var content = '',
-                        i = 0,
-                        l = 0;
                     for (i = 0, l = contents.length; i < l; i += 1) {
                         content += contents[i].content + '\n';
                     }
-                    doUglify([{name: 'precompiled.js', content: content}], options.output, options, directory);
+                    doUglify([{name: 'precompiled.js', content: content}], output, options, directory);
                 } else {
-                    doUglify(contents, options.output, options, directory);
+                    doUglify(contents, output, options, directory);
                 }
             } else {
                 appendLog('Something went wrong.<br/>Done!');
@@ -180,13 +181,24 @@ define(function (require, exports, module) {
             l = options.outputs.length;
             appendLog('Found ' + l + ' outputs');
             for (i = 0; i < l; i += 1) {
-                appendLog('Generating ' + options.outputs[i].output);
+                appendLog('Generating ' + (options.outputs[i].output || options.outputs[i].inputs[0]));
                 getContentsFrom(options.outputs[i], directory, [], 0);
             }
         } else {
             // Compile with old single output option format
             appendLog('Generating ' + options.output);
             getContentsFrom(options, directory, [], 0);
+        }
+    }
+
+    function compileCurrentJS() {
+        var currentFile = DocumentManager.getCurrentDocument().file,
+            ext = currentFile.name.split('.').pop();
+        if (ext === 'js') {
+            doUglify([{name: currentFile.name, content: DocumentManager.getCurrentDocument().getText()}], currentFile.name.replace(/\.js$/, '.min.js'), undefined, currentFile.parentPath);
+        } else {
+            // Current file is not JavaScript. Warn!
+            appendLog('Current document is not JavaScript');
         }
     }
 
@@ -213,13 +225,7 @@ define(function (require, exports, module) {
                     } else {
                         // Options not found. Try to compile current file
                         appendLog('No options file. Compiling current script');
-                        var ext = currentFile.name.split('.').pop();
-                        if (ext === 'js') {
-                            doUglify([{name: currentFile.name, content: DocumentManager.getCurrentDocument().getText()}], currentFile.name.replace(/\.js$/, '.min.js'), undefined, directory);
-                        } else {
-                            // Current file is not JavaScript. Warn!
-                            appendLog('Current document is not JavaScript');
-                        }
+                        compileCurrentJS();
                     }
                 } else {
                     Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, 'JS Compiler', 'Error on reading options:\n' + err);
@@ -347,7 +353,7 @@ define(function (require, exports, module) {
             bottomPanel.$panel.find('.compile.auto').css('background-color', '');
         }
     }
-    
+
     function toggleAutoCompile() {
         automaton.setChecked(!automaton.getChecked());
         prefs.set("on-save", automaton.getChecked());
@@ -417,7 +423,7 @@ define(function (require, exports, module) {
         if (prefs.get("on-save")) {
             var ext = DocumentManager.getCurrentDocument().file.name.split('.').pop();
             if (ext === 'js') {
-                compileJS();
+                compileCurrentJS();
             }
         }
     });

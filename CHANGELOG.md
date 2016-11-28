@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.1] - 2016-11-27
+### Fixed
+- Auto compile on save now compiles only current file, even if options exists.
+- Fixes for quick option generation; now the only required field is "inputs", inferring all the other fields with their default values.
+
 ## [2.1.0] - 2015-07-08
 ### Added
 - Optional auto compile feature.
